@@ -81,6 +81,10 @@
       background: var(--grid);
     }
 
+    .board-wrap {
+      position: relative;
+    }
+
     .cell {
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -181,7 +185,7 @@
     }
 
     .pause-overlay {
-      position: fixed;
+      position: absolute;
       inset: 0;
       background: rgba(15, 26, 32, 0.92);
       color: #fff;
@@ -218,8 +222,8 @@
       border-color: #fff;
     }
 
-    body.paused .app {
-      opacity: 0;
+    body.paused .board {
+      filter: blur(6px);
       pointer-events: none;
     }
 
@@ -249,7 +253,16 @@
     </header>
 
     <section class="panel">
-      <div class="board" id="board"></div>
+      <div class="board-wrap">
+        <div class="board" id="board"></div>
+        <div class="pause-overlay" id="pauseOverlay" aria-hidden="true">
+          <div class="pause-card">
+            <h2>Fasilə verildi</h2>
+            <p>Oyunu davam etdirmək üçün aşağıdakı düyməni basın.</p>
+            <button id="resume">Davam et</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="panel hud">
@@ -280,13 +293,7 @@
     </section>
   </div>
 
-  <div class="pause-overlay" id="pauseOverlay" aria-hidden="true">
-    <div class="pause-card">
-      <h2>Fasilə verildi</h2>
-      <p>Oyunu davam etdirmək üçün aşağıdakı düyməni basın.</p>
-      <button id="resume">Davam et</button>
-    </div>
-  </div>
+  
 
   <script>
     const SIZE = 9;
@@ -668,4 +675,3 @@
   </script>
 </body>
 </html>
-
