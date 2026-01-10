@@ -584,7 +584,13 @@
       mistakes = 0;
       mistakesEl.textContent = mistakes;
 
-      hintsLeft = 3;
+      if (difficulty === "easy") {
+        hintsLeft = 3;
+      } else if (difficulty === "medium") {
+        hintsLeft = 5;
+      } else {
+        hintsLeft = 7;
+      }
       hintBtn.textContent = `İpucu (${hintsLeft})`;
       hintBtn.disabled = false;
 
@@ -661,6 +667,7 @@
     hintBtn.addEventListener("click", hint);
     document.getElementById("check").addEventListener("click", checkBoard);
     document.getElementById("clear").addEventListener("click", clearBoard);
+    difficultyEl.addEventListener("change", newGame);
 
     document.addEventListener("keydown", (event) => {
       if (!selected) return;
