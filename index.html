@@ -283,7 +283,6 @@
           <button class="primary" id="newGame">Yeni oyun</button>
           <button id="pause" aria-label="Fasilə">Fasilə</button>
           <button class="secondary" id="hint" aria-label="İpucu">İpucu</button>
-          <button id="check" aria-label="Yoxla">Yoxla</button>
           <button id="clear" aria-label="Təmizlə">Təmizlə</button>
         </div>
         <div class="numbers" id="numberPad"></div>
@@ -629,28 +628,6 @@
       checkWin();
     }
 
-    function checkBoard() {
-      const cells = boardEl.querySelectorAll(".cell");
-      let wrong = 0;
-
-      cells.forEach((cell) => {
-        const row = Number(cell.dataset.row);
-        const col = Number(cell.dataset.col);
-        const value = puzzle[row][col];
-
-        if (value !== 0 && value !== solution[row][col]) {
-          cell.classList.add("conflict");
-          wrong += 1;
-        }
-      });
-
-      if (wrong === 0) {
-        printMessage("Hələlik hər şey yaxşıdır.", "good");
-      } else {
-        printMessage(`${wrong} səhv tapıldı.`);
-      }
-    }
-
     function clearBoard() {
       for (let r = 0; r < SIZE; r += 1) {
         for (let c = 0; c < SIZE; c += 1) {
@@ -665,7 +642,6 @@
     pauseBtn.addEventListener("click", togglePause);
     resumeBtn.addEventListener("click", togglePause);
     hintBtn.addEventListener("click", hint);
-    document.getElementById("check").addEventListener("click", checkBoard);
     document.getElementById("clear").addEventListener("click", clearBoard);
     difficultyEl.addEventListener("change", newGame);
 
