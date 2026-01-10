@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="az">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sudoku Arcade</title>
+  <title>Sudoku Oyunu</title>
   <style>
     :root {
       --ink: #111113;
@@ -233,11 +233,11 @@
   <div class="app">
     <header>
       <div>
-        <h1 class="title">Sudoku Game</h1>
-        <p class="subtitle">Punch in numbers, chase the pattern, and race the clock. Classic logic with a playful skin.</p>
+        <h1 class="title">Sudoku Oyunu</h1>
+        <p class="subtitle">Rəqəmləri yerləşdir, nümunəni tap və vaxtla yarış. Klassik məntiq oyunu.</p>
       </div>
       <div class="badge">
-        <span>Time</span>
+        <span>Vaxt</span>
         <span id="timer">00:00</span>
       </div>
     </header>
@@ -248,29 +248,29 @@
 
     <section class="panel hud">
       <div class="hud-row">
-        <span>Difficulty</span>
+        <span>Çətinlik</span>
         <select id="difficulty">
-          <option value="easy">Easy</option>
-          <option value="medium" selected>Medium</option>
-          <option value="hard">Hard</option>
+          <option value="easy">Asan</option>
+          <option value="medium" selected>Orta</option>
+          <option value="hard">Çətin</option>
         </select>
       </div>
       <div class="hud-row">
-        <span>Mistakes</span>
+        <span>Səhvlər</span>
         <span id="mistakes">0</span>
       </div>
       <div class="controls">
         <div class="button-row">
           <button class="primary" id="newGame">Yeni Oyun</button>
-          <button id="pause">Pause</button>
-          <button class="secondary" id="hint">Hint</button>
-          <button id="check">Check</button>
+          <button id="pause">Fasilə</button>
+          <button class="secondary" id="hint">İpucu</button>
+          <button id="check">Yoxla</button>
           <button id="clear">Təmizlə</button>
         </div>
         <div class="numbers" id="numberPad"></div>
       </div>
       <div class="message" id="message"></div>
-      <p class="note">Select a cell, then tap a number or use your keyboard. Use 0 or backspace to clear.</p>
+      <p class="note">Hücrəni seçin, sonra rəqəm vurun və ya klaviatura istifadə edin. Silmək üçün 0 və ya Backspace basın.</p>
     </section>
   </div>
 
@@ -347,12 +347,12 @@
         pausedElapsed = Date.now() - startTime;
         stopTimer();
         paused = true;
-        pauseBtn.textContent = "Resume";
-        printMessage("Paused.");
+        pauseBtn.textContent = "Davam et";
+        printMessage("Fasilə verildi.");
       } else {
         startTimer();
-        pauseBtn.textContent = "Pause";
-        printMessage("Back in play.", "good");
+        pauseBtn.textContent = "Fasilə";
+        printMessage("Davam edirik.", "good");
       }
     }
 
@@ -488,13 +488,13 @@
 
     function placeNumber(num) {
       if (!selected) {
-        printMessage("Select a cell first.");
+        printMessage("Əvvəlcə hücrə seçin.");
         return;
       }
       const row = Number(selected.dataset.row);
       const col = Number(selected.dataset.col);
       if (fixed.has(`${row},${col}`)) {
-        printMessage("That number is fixed.");
+        printMessage("Bu rəqəm sabitdir.");
         return;
       }
       if (num === 0) {
@@ -506,7 +506,7 @@
         mistakes += 1;
         mistakesEl.textContent = mistakes;
         selected.classList.add("conflict");
-        printMessage("Not quite. Try again.");
+        printMessage("Düz deyil. Yenidən cəhd et.");
         return;
       }
       puzzle[row][col] = num;
@@ -521,13 +521,13 @@
         }
       }
       stopTimer();
-      printMessage("You solved it!", "good");
+      printMessage("Təbriklər! Tapmaca həll olundu.", "good");
     }
 
     function newGame() {
       paused = false;
       pausedElapsed = 0;
-      document.getElementById("pause").textContent = "Pause";
+      document.getElementById("pause").textContent = "Fasilə";
       const difficulty = difficultyEl.value;
       solution = generateCompleteGrid();
       puzzle = solution.map((row) => row.slice());
@@ -541,17 +541,17 @@
       mistakes = 0;
       mistakesEl.textContent = mistakes;
       hintsLeft = 3;
-      hintBtn.textContent = `Hint (${hintsLeft})`;
+      hintBtn.textContent = `İpucu (${hintsLeft})`;
       hintBtn.disabled = false;
       selected = null;
       renderBoard();
       startTimer();
-      printMessage("New puzzle loaded.", "good");
+      printMessage("Yeni tapmaca yükləndi.", "good");
     }
 
     function hint() {
       if (hintsLeft <= 0) {
-        printMessage("No hints left.");
+        printMessage("İpucu qalmay?b.");
         return;
       }
       const openCells = [];
@@ -561,13 +561,13 @@
         }
       }
       if (openCells.length === 0) {
-        printMessage("Puzzle already complete.");
+        printMessage("Tapmaca artıq tamamlanıb.");
         return;
       }
       const [row, col] = openCells[Math.floor(Math.random() * openCells.length)];
       puzzle[row][col] = solution[row][col];
       hintsLeft -= 1;
-      hintBtn.textContent = `Hint (${hintsLeft})`;
+      hintBtn.textContent = `İpucu (${hintsLeft})`;
       if (hintsLeft === 0) {
         hintBtn.disabled = true;
       }
@@ -588,9 +588,9 @@
         }
       });
       if (wrong === 0) {
-        printMessage("Looks good so far.", "good");
+        printMessage("Hələlik hər şey yaxşıdır.", "good");
       } else {
-        printMessage(`${wrong} conflict${wrong === 1 ? "" : "s"} found.`);
+        printMessage(`${wrong} səhv tapıldı.`);
       }
     }
 
@@ -601,7 +601,7 @@
         }
       }
       renderBoard();
-      printMessage("Cleared all notes.");
+      printMessage("Bütün qeydlər təmizləndi.");
     }
 
     document.getElementById("newGame").addEventListener("click", newGame);
@@ -626,3 +626,4 @@
   </script>
 </body>
 </html>
+
