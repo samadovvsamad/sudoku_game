@@ -21,9 +21,7 @@
       --font-ui: "Space Grotesk", "Segoe UI", sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -98,9 +96,7 @@
       user-select: none;
     }
 
-    .cell:nth-child(odd) {
-      background: var(--tile-alt);
-    }
+    .cell:nth-child(odd) { background: var(--tile-alt); }
 
     .cell.fixed {
       color: var(--fixed);
@@ -113,23 +109,16 @@
       transform: scale(1.03);
     }
 
-    .cell.conflict {
-      background: var(--conflict);
-    }
+    .cell.conflict { background: var(--conflict); }
 
-    .cell:nth-child(3n) {
-      border-right: 2px solid var(--grid);
-    }
+    .cell:nth-child(3n) { border-right: 2px solid var(--grid); }
 
     .cell:nth-child(n + 19):nth-child(-n + 27),
     .cell:nth-child(n + 46):nth-child(-n + 54) {
       border-bottom: 2px solid var(--grid);
     }
 
-    .hud {
-      display: grid;
-      gap: 16px;
-    }
+    .hud { display: grid; gap: 16px; }
 
     .hud-row {
       display: flex;
@@ -148,10 +137,7 @@
       font-weight: 600;
     }
 
-    .controls {
-      display: grid;
-      gap: 12px;
-    }
+    .controls { display: grid; gap: 12px; }
 
     .button-row {
       display: flex;
@@ -169,19 +155,10 @@
       transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
     }
 
-    button.primary {
-      background: var(--accent);
-      color: #fff;
-    }
+    button.primary { background: var(--accent); color: #fff; }
+    button.secondary { background: var(--accent-2); color: #fff; }
 
-    button.secondary {
-      background: var(--accent-2);
-      color: #fff;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-    }
+    button:hover { transform: translateY(-2px); }
 
     .numbers {
       display: grid;
@@ -189,10 +166,7 @@
       gap: 10px;
     }
 
-    .numbers button {
-      padding: 12px 0;
-      font-size: 1rem;
-    }
+    .numbers button { padding: 12px 0; font-size: 1rem; }
 
     .message {
       min-height: 24px;
@@ -206,26 +180,58 @@
       line-height: 1.5;
     }
 
-    @keyframes floatIn {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .pause-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 26, 32, 0.92);
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      z-index: 20;
     }
 
-    .panel,
-    header {
-      animation: floatIn 0.6s ease both;
+    .pause-overlay.active { display: flex; }
+
+    .pause-card {
+      max-width: 360px;
+      display: grid;
+      gap: 12px;
     }
+
+    .pause-card h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 2rem;
+    }
+
+    .pause-card p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .pause-card button {
+      background: var(--accent);
+      color: #fff;
+      border-color: #fff;
+    }
+
+    body.paused .app {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel, header { animation: floatIn 0.6s ease both; }
 
     @media (max-width: 900px) {
-      .app {
-        grid-template-columns: 1fr;
-      }
+      .app { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -261,17 +267,25 @@
       </div>
       <div class="controls">
         <div class="button-row">
-          <button class="primary" id="newGame">Yeni Oyun</button>
-          <button id="pause">Fasilə</button>
-          <button class="secondary" id="hint">İpucu</button>
-          <button id="check">Yoxla</button>
-          <button id="clear">Təmizlə</button>
+          <button class="primary" id="newGame">Yeni oyun</button>
+          <button id="pause" aria-label="Fasilə">Fasilə</button>
+          <button class="secondary" id="hint" aria-label="İpucu">İpucu</button>
+          <button id="check" aria-label="Yoxla">Yoxla</button>
+          <button id="clear" aria-label="Təmizlə">Təmizlə</button>
         </div>
         <div class="numbers" id="numberPad"></div>
       </div>
       <div class="message" id="message"></div>
-      <p class="note">Hücrəni seçin, sonra rəqəm vurun və ya klaviatura istifadə edin. Silmək üçün 0 və ya Backspace basın.</p>
+      <p class="note">Hücrəni seçin, sonra rəqəm vurun və ya klaviaturadan istifadə edin. Silmək üçün 0, Backspace və ya Delete basın.</p>
     </section>
+  </div>
+
+  <div class="pause-overlay" id="pauseOverlay" aria-hidden="true">
+    <div class="pause-card">
+      <h2>Fasilə verildi</h2>
+      <p>Oyunu davam etdirmək üçün aşağıdakı düyməni basın.</p>
+      <button id="resume">Davam et</button>
+    </div>
   </div>
 
   <script>
@@ -300,6 +314,9 @@
     const mistakesEl = document.getElementById("mistakes");
     const hintBtn = document.getElementById("hint");
     const difficultyEl = document.getElementById("difficulty");
+    const pauseOverlay = document.getElementById("pauseOverlay");
+    const resumeBtn = document.getElementById("resume");
+    const pauseBtn = document.getElementById("pause");
 
     function buildNumberPad() {
       const pad = document.getElementById("numberPad");
@@ -342,27 +359,31 @@
     }
 
     function togglePause() {
-      const pauseBtn = document.getElementById("pause");
       if (!paused) {
         pausedElapsed = Date.now() - startTime;
         stopTimer();
         paused = true;
         pauseBtn.textContent = "Davam et";
+        pauseBtn.setAttribute("aria-label", "Davam et");
         printMessage("Fasilə verildi.");
+        document.body.classList.add("paused");
+        pauseOverlay.classList.add("active");
+        pauseOverlay.setAttribute("aria-hidden", "false");
       } else {
         startTimer();
         pauseBtn.textContent = "Fasilə";
+        pauseBtn.setAttribute("aria-label", "Fasilə");
         printMessage("Davam edirik.", "good");
+        document.body.classList.remove("paused");
+        pauseOverlay.classList.remove("active");
+        pauseOverlay.setAttribute("aria-hidden", "true");
       }
     }
 
     function isValid(grid, row, col, num) {
-      for (let c = 0; c < SIZE; c += 1) {
-        if (grid[row][c] === num) return false;
-      }
-      for (let r = 0; r < SIZE; r += 1) {
-        if (grid[r][col] === num) return false;
-      }
+      for (let c = 0; c < SIZE; c += 1) if (grid[row][c] === num) return false;
+      for (let r = 0; r < SIZE; r += 1) if (grid[r][col] === num) return false;
+
       const startR = Math.floor(row / BOX) * BOX;
       const startC = Math.floor(col / BOX) * BOX;
       for (let r = startR; r < startR + BOX; r += 1) {
@@ -386,11 +407,13 @@
       const spot = findEmpty(grid);
       if (!spot) return true;
       const [row, col] = spot;
-      const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+      const nums = [1,2,3,4,5,6,7,8,9];
       for (let i = nums.length - 1; i > 0; i -= 1) {
         const j = Math.floor(Math.random() * (i + 1));
         [nums[i], nums[j]] = [nums[j], nums[i]];
       }
+
       for (const num of nums) {
         if (isValid(grid, row, col, num)) {
           grid[row][col] = num;
@@ -405,6 +428,7 @@
       const spot = findEmpty(grid);
       if (!spot) return 1;
       const [row, col] = spot;
+
       let count = 0;
       for (let num = 1; num <= 9; num += 1) {
         if (isValid(grid, row, col, num)) {
@@ -429,19 +453,19 @@
     function carvePuzzle(grid, blanks) {
       const positions = [];
       for (let r = 0; r < SIZE; r += 1) {
-        for (let c = 0; c < SIZE; c += 1) {
-          positions.push([r, c]);
-        }
+        for (let c = 0; c < SIZE; c += 1) positions.push([r, c]);
       }
       for (let i = positions.length - 1; i > 0; i -= 1) {
         const j = Math.floor(Math.random() * (i + 1));
         [positions[i], positions[j]] = [positions[j], positions[i]];
       }
+
       let removed = 0;
       for (const [row, col] of positions) {
         if (removed >= blanks) break;
         const temp = grid[row][col];
         grid[row][col] = 0;
+
         const testGrid = grid.map((r) => r.slice());
         if (countSolutions(testGrid, 2) !== 1) {
           grid[row][col] = temp;
@@ -493,15 +517,18 @@
       }
       const row = Number(selected.dataset.row);
       const col = Number(selected.dataset.col);
+
       if (fixed.has(`${row},${col}`)) {
         printMessage("Bu rəqəm sabitdir.");
         return;
       }
+
       if (num === 0) {
         puzzle[row][col] = 0;
         renderBoard();
         return;
       }
+
       if (solution[row][col] !== num) {
         mistakes += 1;
         mistakesEl.textContent = mistakes;
@@ -509,6 +536,7 @@
         printMessage("Düz deyil. Yenidən cəhd et.");
         return;
       }
+
       puzzle[row][col] = num;
       renderBoard();
       checkWin();
@@ -527,22 +555,32 @@
     function newGame() {
       paused = false;
       pausedElapsed = 0;
-      document.getElementById("pause").textContent = "Fasilə";
+
+      pauseBtn.textContent = "Fasilə";
+      pauseBtn.setAttribute("aria-label", "Fasilə");
+      document.body.classList.remove("paused");
+      pauseOverlay.classList.remove("active");
+      pauseOverlay.setAttribute("aria-hidden", "true");
+
       const difficulty = difficultyEl.value;
       solution = generateCompleteGrid();
       puzzle = solution.map((row) => row.slice());
       puzzle = carvePuzzle(puzzle, DIFFICULTY_BLANKS[difficulty]);
+
       fixed = new Set();
       for (let r = 0; r < SIZE; r += 1) {
         for (let c = 0; c < SIZE; c += 1) {
           if (puzzle[r][c] !== 0) fixed.add(`${r},${c}`);
         }
       }
+
       mistakes = 0;
       mistakesEl.textContent = mistakes;
+
       hintsLeft = 3;
       hintBtn.textContent = `İpucu (${hintsLeft})`;
       hintBtn.disabled = false;
+
       selected = null;
       renderBoard();
       startTimer();
@@ -551,26 +589,29 @@
 
     function hint() {
       if (hintsLeft <= 0) {
-        printMessage("İpucu qalmay?b.");
+        printMessage("İpucu qalmayıb.");
         return;
       }
+
       const openCells = [];
       for (let r = 0; r < SIZE; r += 1) {
         for (let c = 0; c < SIZE; c += 1) {
           if (puzzle[r][c] === 0) openCells.push([r, c]);
         }
       }
+
       if (openCells.length === 0) {
         printMessage("Tapmaca artıq tamamlanıb.");
         return;
       }
+
       const [row, col] = openCells[Math.floor(Math.random() * openCells.length)];
       puzzle[row][col] = solution[row][col];
+
       hintsLeft -= 1;
       hintBtn.textContent = `İpucu (${hintsLeft})`;
-      if (hintsLeft === 0) {
-        hintBtn.disabled = true;
-      }
+      if (hintsLeft === 0) hintBtn.disabled = true;
+
       renderBoard();
       checkWin();
     }
@@ -578,15 +619,18 @@
     function checkBoard() {
       const cells = boardEl.querySelectorAll(".cell");
       let wrong = 0;
+
       cells.forEach((cell) => {
         const row = Number(cell.dataset.row);
         const col = Number(cell.dataset.col);
         const value = puzzle[row][col];
+
         if (value !== 0 && value !== solution[row][col]) {
           cell.classList.add("conflict");
           wrong += 1;
         }
       });
+
       if (wrong === 0) {
         printMessage("Hələlik hər şey yaxşıdır.", "good");
       } else {
@@ -605,19 +649,17 @@
     }
 
     document.getElementById("newGame").addEventListener("click", newGame);
-    document.getElementById("pause").addEventListener("click", togglePause);
-    document.getElementById("hint").addEventListener("click", hint);
+    pauseBtn.addEventListener("click", togglePause);
+    resumeBtn.addEventListener("click", togglePause);
+    hintBtn.addEventListener("click", hint);
     document.getElementById("check").addEventListener("click", checkBoard);
     document.getElementById("clear").addEventListener("click", clearBoard);
 
     document.addEventListener("keydown", (event) => {
       if (!selected) return;
       const key = event.key;
-      if (key >= "1" && key <= "9") {
-        placeNumber(Number(key));
-      } else if (key === "0" || key === "Backspace" || key === "Delete") {
-        placeNumber(0);
-      }
+      if (key >= "1" && key <= "9") placeNumber(Number(key));
+      else if (key === "0" || key === "Backspace" || key === "Delete") placeNumber(0);
     });
 
     buildBoard();
@@ -626,4 +668,3 @@
   </script>
 </body>
 </html>
-
